@@ -1,0 +1,10 @@
+.env
+.DS_Store
+
+# Pi-hole runtime/generated data (kept out of git)
+etc-pihole/*
+etc-dnsmasq.d/*
+
+# Keep the directories in git
+!etc-pihole/.gitkeep
+!etc-dnsmasq.d/.gitkeep

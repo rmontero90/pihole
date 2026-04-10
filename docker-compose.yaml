@@ -1,0 +1,29 @@
+services:
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+    environment:
+      TZ: 'Europe/Moscow'
+      # Pi-hole v6 reads API password from FTLCONF_webserver_api_password
+      FTLCONF_webserver_api_password: ${WEBPASSWORD}
+      FTLCONF_dns_upstreams: '8.8.8.8;1.1.1.1'
+    volumes:
+      - './etc-pihole:/etc/pihole'
+      - './etc-dnsmasq.d:/etc/dnsmasq.d'
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+
+  nginx:
+    container_name: nginx-proxy
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - pihole
+    restart: unless-stopped
