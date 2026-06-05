@@ -5,7 +5,7 @@ services:
     ports:
       - "53:53/tcp"
       - "53:53/udp"
-      - "127.0.0.1:8080:80"
+      - "127.0.0.1:8888:80"
     environment:
       TZ: 'America/Costa_Rica'
       # Pi-hole v6 reads API password from FTLCONF_webserver_api_password
