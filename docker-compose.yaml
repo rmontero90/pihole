@@ -11,6 +11,7 @@ services:
       FTLCONF_dns_upstreams: '172.20.0.3#5335'
       FTLCONF_dns_bogusPriv: 'true'
       FTLCONF_dns_domainNeeded: 'true'
+      FTLCONF_webserver_domain: 'dns.rmontero.me'
     volumes:
       - './etc-pihole:/etc/pihole'
       - './etc-dnsmasq.d:/etc/dnsmasq.d'
