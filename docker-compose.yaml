@@ -12,6 +12,7 @@ services:
       FTLCONF_dns_bogusPriv: 'true'
       FTLCONF_dns_domainNeeded: 'true'
       FTLCONF_webserver_domain: 'dns.rmontero.me'
+      FTLCONF_webserver_acl: '+0.0.0.0/0'
     volumes:
       - './etc-pihole:/etc/pihole'
       - './etc-dnsmasq.d:/etc/dnsmasq.d'
