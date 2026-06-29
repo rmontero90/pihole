@@ -5,7 +5,6 @@ services:
     ports:
       - "53:53/tcp"
       - "53:53/udp"
-      - "127.0.0.1:8888:80"
     environment:
       TZ: 'America/New_York'
       FTLCONF_webserver_api_password: ${WEBPASSWORD}
@@ -21,6 +20,7 @@ services:
     networks:
       dns_net:
         ipv4_address: 172.20.0.2
+      taurus:
     depends_on:
       unbound:
         condition: service_healthy
@@ -48,3 +48,5 @@ networks:
     ipam:
       config:
         - subnet: 172.20.0.0/29
+  taurus:
+    external: true
