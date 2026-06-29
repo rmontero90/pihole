@@ -7,13 +7,44 @@ services:
       - "53:53/udp"
       - "127.0.0.1:8888:80"
     environment:
-      TZ: 'America/Costa_Rica'
-      # Pi-hole v6 reads API password from FTLCONF_webserver_api_password
+      TZ: 'America/New_York'
       FTLCONF_webserver_api_password: ${WEBPASSWORD}
-      FTLCONF_dns_upstreams: '8.8.8.8;1.1.1.1'
+      FTLCONF_dns_upstreams: '172.20.0.3#5335'
+      FTLCONF_dns_bogusPriv: 'true'
+      FTLCONF_dns_domainNeeded: 'true'
     volumes:
       - './etc-pihole:/etc/pihole'
       - './etc-dnsmasq.d:/etc/dnsmasq.d'
     cap_add:
       - NET_ADMIN
     restart: unless-stopped
+    networks:
+      dns_net:
+        ipv4_address: 172.20.0.2
+    depends_on:
+      unbound:
+        condition: service_healthy
+
+  unbound:
+    image: mvance/unbound:latest
+    container_name: unbound
+    restart: unless-stopped
+    volumes:
+      - './unbound/unbound.conf:/opt/unbound/etc/unbound/unbound.conf:ro'
+      - './unbound/root.hints:/opt/unbound/etc/unbound/root.hints:ro'
+    networks:
+      dns_net:
+        ipv4_address: 172.20.0.3
+    healthcheck:
+      test: ["CMD", "drill", "-p", "5335", "cloudflare.com", "@127.0.0.1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+networks:
+  dns_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/29
