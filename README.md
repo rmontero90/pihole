@@ -143,23 +143,19 @@ Add all blocklists to Pi-hole (run on Vultr server):
 docker exec pihole pihole-FTL sqlite3 /etc/pihole/gravity.db \
   "INSERT INTO adlist (address, enabled, comment) VALUES ('https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts', 1, 'StevenBlack (General ads)');"
 
-# 2. YouTube ads (6K)
-docker exec pihole pihole-FTL sqlite3 /etc/pihole/gravity.db \
-  "INSERT INTO adlist (address, enabled, comment) VALUES ('https://raw.githubusercontent.com/kboghdady/youTube_ads_4_pi-hole/master/crowed_list.txt', 1, 'YouTube ads list');"
-
-# 3. OISD big (336K comprehensive)
+# 2. OISD big (336K comprehensive - PRODUCTION RECOMMENDED)
 docker exec pihole pihole-FTL sqlite3 /etc/pihole/gravity.db \
   "INSERT INTO adlist (address, enabled, comment) VALUES ('https://big.oisd.nl', 1, 'OISD big (Comprehensive)');"
 
-# 4. RuADList + EasyList (45K Russian ads)
+# 3. RuADList + EasyList (45K Russian ads)
 docker exec pihole pihole-FTL sqlite3 /etc/pihole/gravity.db \
   "INSERT INTO adlist (address, enabled, comment) VALUES ('https://easylist-downloads.adblockplus.org/ruadlist+easylist.txt', 1, 'RuADList + EasyList (Russian ads)');"
 
-# 5. Fanboy Social (social media tracking widgets)
+# 4. Fanboy Social (social media tracking widgets)
 docker exec pihole pihole-FTL sqlite3 /etc/pihole/gravity.db \
   "INSERT INTO adlist (address, enabled, comment) VALUES ('https://easylist-downloads.adblockplus.org/fanboy-social.txt', 1, 'Fanboy Social Blocklist');"
 
-# 6. Adguard DNS (152K comprehensive ads/tracking/malware)
+# 5. Adguard DNS (152K comprehensive ads/tracking/malware)
 docker exec pihole pihole-FTL sqlite3 /etc/pihole/gravity.db \
   "INSERT INTO adlist (address, enabled, comment) VALUES ('https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt', 1, 'Adguard DNS filter');"
 
@@ -167,8 +163,34 @@ docker exec pihole pihole-FTL sqlite3 /etc/pihole/gravity.db \
 docker exec pihole pihole -g
 ```
 
-**Total blocklists:** 6  
-**Total unique domains:** 523,842
+**Total blocklists:** 5 (production-verified)  
+**Total unique domains:** 500K+
+
+### 3. Whitelist Commonly Blocked Domains (IMPORTANT)
+
+The aggressive blocklists (OISD, Adguard, Fanboy Social) may block legitimate services. Whitelist them:
+
+```bash
+# Google services
+docker exec pihole pihole allow google.com
+docker exec pihole pihole allow www.google.com
+docker exec pihole pihole allow accounts.google.com
+docker exec pihole pihole allow apis.google.com
+docker exec pihole pihole allow fonts.google.com
+
+# YouTube CDN (required for video playback)
+docker exec pihole pihole allow googlevideo.com
+docker exec pihole pihole allow manifest.googlevideo.com
+docker exec pihole pihole allow yt3.ggpht.com
+docker exec pihole pihole allow yt4.ggpht.com
+
+# Apply changes
+docker exec pihole pihole reloaddns
+```
+
+**Why:** Aggressive blocklists like OISD (336K domains) and Adguard (152K domains) catch legitimate CDN/API endpoints alongside malware. Whitelisting preserves blocking of actual malicious domains while allowing legitimate services.
+
+**Note:** If other services stop working (Gmail, Drive, Maps, etc.), they're likely blocked by the same lists. Add them to the allowlist as needed.
 
 ### 3. Run Tests
 
@@ -308,11 +330,11 @@ docker exec pihole pihole api gravity/summary
 - ✅ All DNS queries encrypted over WireGuard tunnel
 - ✅ DNSSEC validates all responses from root servers
 - ✅ Private address ranges (RFC 1918) excluded from resolution
-- ⚠️ Unbound listens on 5335 internally only (172.20.0.0/29 ACL)
+- ⚠️ Unbound listens on 5335 internally only
 
 ## Performance
 
-- **Query latency:** ~90ms (Vultr Miami → client, through WireGuard)
+- **Query latency:** ~90ms (Server → client, through WireGuard)
 - **Cache hit latency:** <10ms
 - **Concurrent queries:** 4000+ per thread
 - **Blocked domains:** 523,842 unique
