@@ -184,6 +184,14 @@ docker exec pihole pihole allow manifest.googlevideo.com
 docker exec pihole pihole allow yt3.ggpht.com
 docker exec pihole pihole allow yt4.ggpht.com
 
+# AWS S3 & CloudFront CDN (images/assets hosted on AWS)
+docker exec pihole pihole allow s3.amazonaws.com
+docker exec pihole pihole allow cloudfront.net
+# Regex allowlists for wildcard S3 bucket subdomains and regional endpoints
+docker exec pihole pihole --allow-regex '(^|\.)s3\.amazonaws\.com$'
+docker exec pihole pihole --allow-regex '(^|\.)s3\.[a-z0-9-]+\.amazonaws\.com$'
+docker exec pihole pihole --allow-regex '(^|\.)cloudfront\.net$'
+
 # Apply changes
 docker exec pihole pihole reloaddns
 ```
@@ -311,6 +319,21 @@ docker exec pihole pihole api gravity/summary
 ### Pi-hole reports 403 Forbidden
 - Run: `docker compose up -d --force-recreate pihole`
 - Verify `FTLCONF_webserver_acl: '+0.0.0.0/0'` is set (internal only access)
+
+### AWS S3 CDN images not loading
+
+OISD and Adguard blocklists can catch S3/CloudFront domains. Whitelist them:
+
+```bash
+docker exec pihole pihole allow s3.amazonaws.com
+docker exec pihole pihole allow cloudfront.net
+docker exec pihole pihole --allow-regex '(^|\.)s3\.amazonaws\.com$'
+docker exec pihole pihole --allow-regex '(^|\.)s3\.[a-z0-9-]+\.amazonaws\.com$'
+docker exec pihole pihole --allow-regex '(^|\.)cloudfront\.net$'
+docker exec pihole pihole reloaddns
+```
+
+To confirm a domain is being blocked: `dig @10.13.13.1 <bucket>.s3.amazonaws.com +short` — if it returns `0.0.0.0` it's blocked.
 
 ### Queries not reaching Pi-hole via WireGuard
 - Check CoreDNS config: `cat ~/repos/wireguard/config/coredns/Corefile`

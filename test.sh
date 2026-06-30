@@ -332,6 +332,7 @@ allowed_domains=(
   "vercel.com"
   "digitalocean.com"
   "aws.amazon.com"
+  "s3.amazonaws.com"
   "azure.microsoft.com"
   "developer.mozilla.org"
   "docs.microsoft.com"
