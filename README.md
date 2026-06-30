@@ -1,4 +1,4 @@
-# Pi-hole + Unbound DNS Stack on Vultr Miami VPS
+# Pi-hole + Unbound DNS Stack on VPS
 
 A production-ready recursive DNS resolver with ad-blocking, DNSSEC validation, and WireGuard VPN integration. Blocks **523K+ domains** across 6 curated blocklists with zero third-party DNS upstream dependency.
 
