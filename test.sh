@@ -258,6 +258,42 @@ for domain in "${blocked_russian[@]}"; do
 done
 echo "" >&2
 
+# ── Extended Google ad domains ──────────────────────────────────────────────────
+echo "── Extended Google ad domains ──" >&2
+blocked_google_ext=(
+  "cm.g.doubleclick.net"
+  "bid.g.doubleclick.net"
+  "securepubads.g.doubleclick.net"
+  "googleads4.g.doubleclick.net"
+  "pagead46.l.doubleclick.net"
+)
+for domain in "${blocked_google_ext[@]}"; do
+  result=$(resolve "$domain")
+  if [[ "$result" == "0.0.0.0" || -z "$result" ]]; then
+    pass "Blocked: $domain"
+  else
+    fail "NOT blocked: $domain → $result"
+  fi
+done
+echo "" >&2
+
+# ── CDN ad servers ──────────────────────────────────────────────────────────────
+echo "── CDN ad servers ──" >&2
+blocked_cdn_ads=(
+  "files.vibrantmedia.com"
+  "assets.adtechus.com"
+  "ads.creative-serving.com"
+)
+for domain in "${blocked_cdn_ads[@]}"; do
+  result=$(resolve "$domain")
+  if [[ "$result" == "0.0.0.0" || -z "$result" ]]; then
+    pass "Blocked: $domain"
+  else
+    fail "NOT blocked: $domain → $result"
+  fi
+done
+echo "" >&2
+
 # ── Legitimate domains resolve ────────────────────────────────────────────────
 echo "── Legitimate domains resolve ──" >&2
 allowed_domains=(
@@ -301,6 +337,23 @@ allowed_domains=(
   "docs.microsoft.com"
   "support.apple.com"
   "help.github.com"
+  "medium.com"
+  "hashnode.com"
+  "dev.to"
+  "codepen.io"
+  "jsfiddle.net"
+  "repl.it"
+  "glitch.com"
+  "strapi.io"
+  "stripe.com"
+  "paypal.com"
+  "square.com"
+  "shopify.com"
+  "wix.com"
+  "squarespace.com"
+  "wordpress.com"
+  "blogger.com"
+  "github.com"
 )
 for domain in "${allowed_domains[@]}"; do
   result=$(resolve "$domain")
